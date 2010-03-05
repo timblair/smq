@@ -10,8 +10,8 @@ begin
     gem.email = "tim@bla.ir"
     gem.homepage = "http://github.com/timblair/smq"
     gem.authors = ["Tim Blair"]
-    #gem.add_dependency 'active_record'
-    #gem.add_dependency 'yajl'
+    gem.add_dependency 'activerecord'
+    gem.add_dependency 'yajl-ruby'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
