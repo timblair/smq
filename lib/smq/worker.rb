@@ -12,7 +12,7 @@ module SMQ
 
     def initialize(queue)
       self.name = "#{Socket.gethostname}:#{Process.pid}" rescue "pid:#{Process.pid}"
-      self.queue = SMQ::Queue.new(queue)
+      self.queue = queue.instance_of?(SMQ::Queue) ? queue : SMQ::Queue.new(queue)
     end
 
     def to_s

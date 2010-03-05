@@ -14,6 +14,12 @@ class WorkerTest < Test::Unit::TestCase
     assert_equal "test_queue", @worker.queue.name
   end
 
+  def test_can_init_worker_with_queue_instance
+    worker = SMQ::Worker.new(@worker.queue)
+    assert_instance_of SMQ::Queue, worker.queue
+    assert_equal @worker.queue.name, worker.queue.name
+  end
+
   def test_working_should_yield_a_message_when_one_is_available
     SMQ::Message.build("string", @worker.queue.name).save!
     yielded_msg = nil
