@@ -1,5 +1,11 @@
 require 'rubygems'
-require 'smq'
+
+begin
+  require 'smq'
+rescue LoadError
+  $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+  require 'smq'
+end
 
 ActiveRecord::Base.configurations = YAML.load_file(File.dirname(__FILE__) + '/database.yml')
 ActiveRecord::Base.establish_connection 'development'
