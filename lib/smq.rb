@@ -22,7 +22,7 @@ module SMQ
   end
 
   def self.load_schema!(force = false)
-    return if ActiveRecord::Base.connection.tables.include?(SMQ::Message.table_name)
+    return if !force && ActiveRecord::Base.connection.tables.include?(SMQ::Message.table_name)
     ActiveRecord::Schema.define do
       create_table :smq_messages, :force => force do |t|
         t.string     :queue, :limit => 30, :null => false
