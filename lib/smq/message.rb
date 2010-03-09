@@ -38,6 +38,16 @@ module SMQ
       nil
     end
 
+    def locked?
+      !self.locked_by.nil?
+    end
+    def failed?
+      !self.failed_at.nil?
+    end
+    def completed?
+      !self.completed_at.nil?
+    end
+
     def complete
       self.completed_at = SMQ.now
     end

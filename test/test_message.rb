@@ -89,4 +89,24 @@ class MessageTest < Test::Unit::TestCase
     assert_equal @msg.attempts + 1, @msg.lock!(SMQ::Worker.new("test_queue")).attempts
   end
 
+  def test_message_should_report_as_locked
+    @msg.save!
+    assert !@msg.locked?, "Message locked"
+    @msg.lock!(@worker)
+    assert @msg.locked?, "Message not locked"
+  end
+
+  def test_message_should_report_as_failed
+    assert !@msg.failed?, "Message failed"
+    @msg.fail
+    @msg.save!
+    assert @msg.failed?, "Message not failed"
+  end
+
+  def test_message_should_report_as_completed
+    assert !@msg.completed?, "Message completed"
+    @msg.ack!
+    assert @msg.completed?, "Message not completed"
+  end
+
 end
