@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'test/unit'
-begin; require 'redgreen'; rescue; end
+begin; require 'redgreen'; rescue LoadError; end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
