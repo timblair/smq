@@ -34,6 +34,9 @@ module SMQ
         t.datetime   :completed_at
         t.timestamps
       end
+      if ActiveRecord::Base.connection.instance_variable_get(:@config)[:adapter] == 'mysql'
+        execute "ALTER TABLE `smq_messages` MODIFY COLUMN `updated_at` TIMESTAMP"
+      end
       add_index "smq_messages", ["queue", "completed_at", "locked_by"], :name => "idx_smq_available"
       add_index "smq_messages", ["id", "updated_at", "locked_by", "completed_at"], :name => "idx_smq_unlocked"
     end
