@@ -12,6 +12,7 @@ begin
     gem.authors = ["Tim Blair"]
     gem.add_dependency 'activerecord'
     gem.add_dependency 'yajl-ruby'
+    gem.add_development_dependency 'sqlite3-ruby'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
