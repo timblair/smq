@@ -57,6 +57,12 @@ class QueueTest < Test::Unit::TestCase
     assert_equal 1, SMQ::Message.count(:conditions => ["queue = ?", @queue.name])
   end
 
+  def test_clearing_completed_should_limit_correctly
+    populate_and_ack_all_but_fail_one
+    @queue.clear_completed! 1
+    assert_equal 4, SMQ::Message.count(:conditions => ["queue = ?", @queue.name])
+  end
+
   def test_clearing_failures_should_not_touch_successful_messages
     populate_and_ack_all_but_fail_one
     @queue.clear_failed!

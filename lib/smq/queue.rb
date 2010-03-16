@@ -44,20 +44,26 @@ module SMQ
       delete_queue_items
     end
 
-    def clear_completed!
-      delete_queue_items "completed_at IS NOT NULL"
+    def clear_completed!(limit = nil)
+      delete_queue_items "completed_at IS NOT NULL", limit
     end
-    def clear_successful!
-      delete_queue_items "completed_at IS NOT NULL AND failed_at IS NULL"
+    def clear_successful!(limit = nil)
+      delete_queue_items "completed_at IS NOT NULL AND failed_at IS NULL", limit
     end
-    def clear_failed!
-      delete_queue_items "completed_at IS NOT NULL AND failed_at IS NOT NULL"
+    def clear_failed!(limit = nil)
+      delete_queue_items "completed_at IS NOT NULL AND failed_at IS NOT NULL", limit
     end
 
     private
 
-    def delete_queue_items(where = nil)
-      SMQ::Message.delete_all(["queue = ? #{where ? 'AND ' + where : ''}", @name])
+    def delete_queue_items(where = nil, limit = nil)
+      # delete_all doesn't support a :limit clause, so we have to fake it
+      msg = SMQ::Message.find(:first, :offset => limit) if !limit.nil?
+      if (msg.nil?)
+        SMQ::Message.delete_all(["queue = ? #{where ? 'AND ' + where : ''}", @name])
+      else
+        SMQ::Message.delete_all(["queue = ? AND id < ? #{where ? 'AND ' + where : ''}", @name, msg.id])
+      end
     end
 
   end
