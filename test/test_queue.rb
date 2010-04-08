@@ -63,6 +63,13 @@ class QueueTest < Test::Unit::TestCase
     assert_equal 4, SMQ::Message.count(:conditions => ["queue = ?", @queue.name])
   end
 
+  def test_clearing_completed_should_limit_correctly_with_more_than_one_queue
+    populate_and_ack_all_but_fail_one SMQ::Queue.new("another_queue")
+    populate_and_ack_all_but_fail_one
+    @queue.clear_completed! 2
+    assert_equal 3, SMQ::Message.count(:conditions => ["queue = ?", @queue.name])
+  end
+
   def test_clearing_failures_should_not_touch_successful_messages
     populate_and_ack_all_but_fail_one
     @queue.clear_failed!
@@ -84,8 +91,9 @@ class QueueTest < Test::Unit::TestCase
 
   private
 
-  def populate_and_ack_all_but_fail_one
-    populate_queue(@queue, 5)
+  def populate_and_ack_all_but_fail_one(queue = nil)
+    queue ||= @queue
+    populate_queue(queue, 5)
     msg = SMQ::Message.find(:first)
     msg.fail
     msg.save!
