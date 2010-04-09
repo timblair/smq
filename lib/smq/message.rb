@@ -61,6 +61,11 @@ module SMQ
       save!
     end
 
+    def ack_and_delete!
+      ack!
+      destroy
+    end
+
   end
 
 end

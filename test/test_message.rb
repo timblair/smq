@@ -65,6 +65,14 @@ class MessageTest < Test::Unit::TestCase
     assert_not_nil @msg.id
   end
 
+  def test_ack_delete_marks_message_as_complete_and_deletes
+    @msg.ack_and_delete!
+    assert @msg.frozen?
+    assert_raise ActiveRecord::RecordNotFound do
+      SMQ::Message.find(@msg.id)
+    end
+  end
+
   def test_should_lock_an_unlocked_message
     @msg.save!
     msg = @msg.lock!(@worker)
