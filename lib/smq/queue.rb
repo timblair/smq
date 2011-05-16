@@ -57,12 +57,16 @@ module SMQ
     private
 
     def delete_queue_items(where = nil, limit = nil)
-      # delete_all doesn't support a :limit clause, so we have to fake it
-      msg = SMQ::Message.find(:first, :select => 'id', :conditions => ["queue = ?", @name], :offset => limit) if !limit.nil?
-      if (msg.nil?)
+      if (limit.nil?)
         SMQ::Message.delete_all(["queue = ? #{where ? 'AND ' + where : ''}", @name])
       else
-        SMQ::Message.delete_all(["queue = ? AND id < ? #{where ? 'AND ' + where : ''}", @name, msg.id])
+        # delete_all doesn't support a :limit clause, so we have to fake it
+        msg = SMQ::Message.find(
+          :first, :select => 'id',
+          :conditions => ["queue = ? #{where ? 'AND ' + where : ''}", @name],
+          :order => "id ASC", :offset => limit
+        )
+        SMQ::Message.delete_all(["queue = ? AND id < ? #{where ? 'AND ' + where : ''}", @name, msg.id]) unless msg.nil?
       end
     end
 
