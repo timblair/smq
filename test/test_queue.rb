@@ -89,6 +89,13 @@ class QueueTest < Test::Unit::TestCase
     assert_equal 5, @queue.length
   end
 
+  def test_should_return_only_correctly_batched_messages
+    populate_queue(@queue, 5)
+    assert_equal 1, @queue.find_available(3,1).length
+    assert_equal 2, @queue.find_available(3,2).length
+    assert_equal 2, @queue.find_available(3,3).length
+  end
+
   private
 
   def populate_and_ack_all_but_fail_one(queue = nil)

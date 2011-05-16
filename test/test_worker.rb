@@ -57,4 +57,12 @@ class WorkerTest < Test::Unit::TestCase
     assert !@worker.is_working?, "Working and should have stopped"
   end
 
+  def test_working_a_populated_queue_in_batches_should_work_all_batch_jobs
+    @worker.batches = 2
+    populate_queue(@worker.queue.name, 5)
+    block_calls = 0
+    @worker.work(true) { block_calls += 1 }
+    assert_equal 2, block_calls
+  end
+
 end

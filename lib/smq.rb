@@ -43,9 +43,23 @@ module SMQ
   end
 
   def self.flush_all_queues!
-    # yes, not the most efficient, but *should* only be called during testing
-    # so it's not that much of a concern
-    SMQ::Message.delete_all
+    # we're totally resetting everything here, including any auto-increment
+    # keys: this should only ever be called for testing.
+    # adapted from: http://www.manu-j.com/blog/post/221/
+    case ActiveRecord::Base.connection.instance_variable_get(:@config)[:adapter]
+      when "mysql"
+        ActiveRecord::Base.connection.tables.each do |table|
+          ActiveRecord::Base.connection.execute("TRUNCATE #{SMQ::Message.table_name}")
+        end
+      when "sqlite", "sqlite3"
+        ActiveRecord::Base.connection.tables.each do |table|
+          ActiveRecord::Base.connection.execute("DELETE FROM #{SMQ::Message.table_name}")
+          ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{SMQ::Message.table_name}'")
+        end
+        ActiveRecord::Base.connection.execute("VACUUM")
+      else
+        raise "Unsupported connection type: #{ActiveRecord::Base.connection.instance_variable_get(:@config)[:adapter]}."
+    end
   end
 
 end

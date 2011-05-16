@@ -25,15 +25,23 @@ module SMQ
     end
 
     def reserve(worker)
-      find_available.each do |msg|
+      find_available(worker.batches, worker.batch).each do |msg|
         m = msg.lock!(worker)
         return m unless m == nil
       end
       nil
     end
 
-    def find_available
-      SMQ::Message.find(:all, :select => 'id, updated_at', :conditions => ["queue = ? AND completed_at IS NULL AND locked_by IS NULL", @name], :order => "id ASC", :limit => @batch_size).sort_by { rand() }
+    def find_available(batches=1, batch=1)
+      SMQ::Message.find(
+        :all,
+        :select => 'id, updated_at',
+        :conditions => [
+          "queue = ? AND (id % ?) = ? AND completed_at IS NULL AND locked_by IS NULL",
+          @name, batches, batch-1
+        ],
+        :order => "id ASC", :limit => @batch_size
+      ).sort_by { rand() }
     end
 
     def length

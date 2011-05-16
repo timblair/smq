@@ -4,15 +4,16 @@ module SMQ
 
   class Worker
 
-    attr_accessor :name
-    attr_accessor :queue
+    attr_accessor :name, :queue, :batches, :batch
 
     @working = false
     @stopping = false
 
-    def initialize(queue)
+    def initialize(queue, batches, batch)
       self.name = "#{Socket.gethostname}:#{Process.pid}" rescue "pid:#{Process.pid}"
       self.queue = queue.instance_of?(SMQ::Queue) ? queue : SMQ::Queue.new(queue)
+      self.batches = batches || 1
+      self.batch = batch || 1
     end
 
     def to_s

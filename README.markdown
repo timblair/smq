@@ -81,6 +81,15 @@ This process, although heavy on `SELECT`s, results in a minimum of table locking
 
 These limitations are deemed acceptable due to the simple nature of this queueing system.
 
+### Workaround to Locking Limitations
+
+There is a workaround to the implicit limit of 5 workers per queue, which is to use the "batching" facility.  This works by splitting up the messages by the [modulo](http://en.wikipedia.org/wiki/Modulo_operation) of the ID; in effect this means you can then run up to 5 workers per batch:
+
+	SMQ::Worker.new("queue_name", total_batches, this_batch).work do |msg|
+	  puts msg.data.inspect
+	  msg.ack!
+	end
+
 ## Licensing and Attribution
 
 SMQ is released under the MIT license as detailed in the LICENSE file that should be distributed with this library; the source code is [freely available](http://github.com/timblair/smq).
