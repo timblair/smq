@@ -94,10 +94,12 @@ class QueueTest < Test::Unit::TestCase
   def populate_and_ack_all_but_fail_one(queue = nil)
     queue ||= @queue
     populate_queue(queue, 5)
-    msg = SMQ::Message.find(:first)
-    msg.fail
-    msg.save!
-    @worker.work(true) { |m| m.ack! }
+    SMQ::Message.find(:all, :conditions => ["queue = ?", queue.name]).each do |msg|
+      msg.ack!
+    end
+    failure = SMQ::Message.find(:first)
+    failure.fail
+    failure.save!
   end
 
 end
