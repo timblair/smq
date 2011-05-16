@@ -9,11 +9,11 @@ module SMQ
     @working = false
     @stopping = false
 
-    def initialize(queue, batches, batch)
+    def initialize(queue, batches=1, batch=1)
       self.name = "#{Socket.gethostname}:#{Process.pid}" rescue "pid:#{Process.pid}"
       self.queue = queue.instance_of?(SMQ::Queue) ? queue : SMQ::Queue.new(queue)
-      self.batches = batches || 1
-      self.batch = batch || 1
+      self.batches = batches
+      self.batch = batch
     end
 
     def to_s
