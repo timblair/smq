@@ -77,7 +77,7 @@ To facilitate the locking ("delivery") of individual messages, the following str
 
 The effect of this is that, although multiple workers can be employed on a single queue, the increase in throughput is not linear as may be expected.  In fact, if you increase the number of workers on queue past 5, throughput may actually diminish due to the extra time spent attempting to aquire a message lock.
 
-This process, although heavy on `SELECT`s, results in a minimum of table locking which would actually slow the lock process down.  For example, by using an `UPDATE` with a `LIMIT` of `1` when the queue size is more than a couple of hundred results in a noticible slow down in lock aquisition.
+This process, although heavy on `SELECT`s, results in a minimum of table locking which would actually slow the lock process down.  For example, by using an `UPDATE` with a `LIMIT` of `1` when the queue size is more than a couple of hundred results in a noticible slow down in lock acquisition.
 
 These limitations are deemed acceptable due to the simple nature of this queueing system.
 
